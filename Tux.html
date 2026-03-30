@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shrine of Tux</title>
+    <style>
+        /* Яркая, светлая тема */
+        :root {
+            --bg-color: #ffffff; /* Чистый белый фон */
+            --text-color: #222222; /* Тёмно-серый текст */
+            --accent-color: #fca311; /* Оранжевый (как клюв Тукса) */
+            --shadow: 0 10px 30px rgba(0,0,0,0.1); /* Мягкая тень */
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+            margin: 0;
+            overflow: hidden;
+        }
+
+        .shrine-card {
+            background: white;
+            padding: 50px;
+            border-radius: 30px;
+            text-align: center;
+            box-shadow: var(--shadow);
+            border: 1px solid #eaeaea;
+            transition: transform 0.3s ease;
+            position: relative;
+        }
+
+        .shrine-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .tux-image {
+            width: 200px;
+            height: auto;
+            /* Убрали черно-белый фильтр, вернули цвет */
+            filter: drop-shadow(0 5px 10px rgba(0,0,0,0.1));
+            transition: transform 0.2s ease-in-out;
+            cursor: pointer;
+            user-select: none;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            margin-top: 20px;
+            margin-bottom: 5px;
+            font-weight: 800;
+            letter-spacing: -1px;
+            color: #000;
+        }
+
+        .subtitle {
+            color: #666;
+            margin-bottom: 30px;
+            font-size: 1.1rem;
+        }
+
+        .counter-box {
+            background-color: #f4f4f4;
+            padding: 10px 20px;
+            border-radius: 50px;
+            display: inline-block;
+            margin-bottom: 30px;
+            font-weight: 600;
+        }
+
+        #count {
+            color: var(--accent-color);
+            font-weight: 800;
+            font-size: 1.2rem;
+        }
+
+        .pray-button {
+            background-color: var(--accent-color);
+            color: white;
+            border: none;
+            padding: 18px 40px;
+            font-size: 1.3rem;
+            font-weight: 700;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 10px; /* Отступ между ладонями и текстом */
+            margin: 0 auto;
+            box-shadow: 0 5px 15px rgba(252, 163, 17, 0.3);
+        }
+
+        .pray-button:hover {
+            background-color: #e8950f;
+            transform: scale(1.03);
+            box-shadow: 0 8px 20px rgba(252, 163, 17, 0.4);
+        }
+
+        .pray-button:active {
+            transform: scale(0.98);
+        }
+
+        /* Стиль для ладоней в кнопке */
+        .palms {
+            font-size: 1.5rem;
+        }
+
+        /* Легкие, светлые частицы (сердечки) */
+        .p {
+            position: absolute;
+            font-size: 20px;
+            pointer-events: none;
+            top: 50%;
+            left: 50%;
+            color: var(--accent-color);
+            user-select: none;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="shrine-card">
+        <img src="https://upload.wikimedia.org/wikipedia/commons/a/af/Tux.png"
+             alt="Tux" class="tux-image" id="tux" onclick="pray()">
+
+        <h1>Sanctuary of Tux</h1>
+        <p class="subtitle">The Holy Penguin of Open Source</p>
+
+        <div class="counter-box">
+            Prayers offered: <span id="count">0</span>
+        </div>
+
+        <button class="pray-button" onclick="pray()">
+            <span class="palms">🙏</span>
+            PRAY
+            <span class="palms">🙏</span>
+        </button>
+    </div>
+
+    <script>
+        let count = 0;
+        // Попробуем загрузить счетчик из памяти браузера
+        if(localStorage.getItem('tuxPrayers')) {
+            count = localStorage.getItem('tuxPrayers');
+            document.getElementById('count').innerText = count;
+        }
+
+        const countDisplay = document.getElementById('count');
+        const tux = document.getElementById('tux');
+        const card = document.querySelector('.shrine-card');
+
+        function pray() {
+            count++;
+            countDisplay.innerText = count;
+            // Сохраняем счетчик
+            localStorage.setItem('tuxPrayers', count);
+
+            // Мягкая анимация "поклона" (сжатие)
+            tux.style.transform = "scale(0.92) translateY(5px)";
+            setTimeout(() => {
+                tux.style.transform = "scale(1) translateY(0)";
+            }, 150);
+
+            // Создаем вылетающие частицы (сердечки или искры)
+            for (let i = 0; i < 6; i++) {
+                createParticle();
+            }
+        }
+
+        function createParticle() {
+            const p = document.createElement('div');
+            p.className = 'p';
+            p.innerText = '✨'; // Можно заменить на '🧡' или '🐧'
+
+            // Случайное направление разлета
+            const x = (Math.random() - 0.5) * 400;
+            const y = (Math.random() - 0.8) * 300; // Больше вверх
+
+            const anim = p.animate([
+                { transform: 'translate(-50%, -50%) scale(0)', opacity: 0 },
+                { transform: 'translate(-50%, -50%) scale(1)', opacity: 1, offset: 0.2 },
+                { transform: `translate(${x}px, ${y}px) scale(0.5)`, opacity: 0 }
+            ], {
+                duration: 1000 + Math.random() * 500,
+                easing: 'ease-out'
+            });
+
+            card.appendChild(p);
+            anim.onfinish = () => p.remove();
+        }
+    </script>
+</body>
+</html>
